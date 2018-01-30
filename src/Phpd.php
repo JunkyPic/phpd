@@ -21,6 +21,6 @@ class Phpd
 
         $builder = new Builder();
 
-        return $builder->setInput($args[0])->build();
+        echo $builder->setInput($args[0])->build();
     }
 }

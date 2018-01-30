@@ -5,11 +5,11 @@ namespace Phpd\Renderer;
 class Html
 {
     public function getHeader() {
-        return '<dl>';
+        return '<pre><dl>';
     }
 
     public function getFooter() {
-        return '</dl>';
+        return '</dl></pre>';
     }
 
     public function buildFromString($string) {
