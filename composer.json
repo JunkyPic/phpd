@@ -1,0 +1,19 @@
+{
+    "name": "junky/phpd",
+    "description": "A very simple PHP dumper",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Junky",
+            "email": "junkypic@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.0.0"
+    },
+    "autoload": {
+        "files": ["src/gl.php"],
+        "psr-4": { "Phpd\\": "src/" }
+    }
+}
