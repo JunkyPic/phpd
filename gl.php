@@ -8,7 +8,8 @@ function isCli(): bool {
 }
 
 /**
- * @param array ...$args
+ * @param mixed ...$args
+ *
  * @throws Exception
  */
 function dump(...$args): void {

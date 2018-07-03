@@ -4,12 +4,15 @@ namespace Phpd;
 
 use Phpd\Renderer\Cli;
 use Phpd\Renderer\Html;
+use Phpd\Renderer\RendererInterface;
 
 /**
  * Class Builder
+ *
  * @package Phpd
  */
-class Builder {
+class Builder
+{
     const TYPE_BOOLEAN = 'boolean';
     const TYPE_INTEGER = 'integer';
     const TYPE_FLOAT = 'float';
@@ -20,67 +23,68 @@ class Builder {
     const TYPE_NULL = 'null';
     const TYPE_CALLABLE_CALLBACK = 'callable';
 
-    private $html = '';
+    /**
+     * @var Cli
+     */
+    private $renderer;
 
     /**
-     * @var
+     * Builder constructor.
+     *
+     * @param RendererInterface $renderer
      */
-    private $input;
+    public function __construct(RendererInterface $renderer)
+    {
+        if ($renderer instanceof Html) {
+            $this->renderer = new Html();
+        }
+    }
 
     /**
      * @param $input
-     * @return $this
+     *
+     * @return string
+     * @throws Config\ConfigLoaderException
      */
-    public function setInput($input) {
-        $this->input = $input;
-        return $this;
+    public function build($input)
+    {
+        if(is_bool($input)) {
+            return $this->wrapGeneric($input ? 'true' : 'false', self::TYPE_BOOLEAN);
+        }
+
+        if(is_integer($input)) {
+            return $this->wrapGeneric($input, self::TYPE_INTEGER);
+        }
+
+        if(is_float($input)) {
+            return $this->wrapGeneric($input, self::TYPE_FLOAT);
+        }
+
+        if(is_string($input)) {
+            return $this->wrapGeneric($input, self::TYPE_STRING);
+        }
     }
 
     /**
-     * @param $arg
+     * @param $input
+     * @param $type
      *
      * @return string
+     * @throws Config\ConfigLoaderException
      */
-    private function getType($arg)
-    {
-        switch ($arg) {
-            case is_callable($arg):
-                return self::TYPE_CALLABLE_CALLBACK;
-            case is_array($arg):
-                return self::TYPE_ARRAY;
-            case is_object($arg):
-                return self::TYPE_OBJECT;
-            case is_string($arg):
-                return self::TYPE_STRING;
-            case is_resource($arg):
-                return self::TYPE_RESOURCE;
-            case is_null($arg):
-                return self::TYPE_NULL;
-            case is_bool($arg):
-                return self::TYPE_BOOLEAN;
-            case (int)$arg === $arg:
-                return self::TYPE_INTEGER;
-            case is_float($arg):
-                return self::TYPE_FLOAT;
-        }
-    }
-
-    public function build() {
-
-        if (php_sapi_name() === 'cli') {
-            $renderer = new Cli();
-        } else {
-            $renderer = new Html();
-        }
-//
-//        $this->html .= $renderer->getHeader();
-//        $this->html .= '<dd>Coffee</dd><dd>Coffee2</dd>';
-//        $this->html .= $renderer->getFooter();
-
-        return '       
-    <dt>Name: </dt>
-    <dt>John Don</dt>
-';
+    private function wrapGeneric($input, $type) {
+        return $this
+            ->renderer
+            ->start()
+            ->startUl()
+            ->startLi()
+            ->append($type)
+            ->startUl()
+            ->wrapToLi($input)
+            ->endUl()
+            ->endLi()
+            ->endUl()
+            ->end();
     }
 
 }

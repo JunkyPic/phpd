@@ -2,6 +2,6 @@
 
 namespace Phpd\Renderer;
 
-class Cli {
+class Cli implements RendererInterface{
 
 }
