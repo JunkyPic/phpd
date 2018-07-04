@@ -1,4 +1,19 @@
 {
   "theme": "src/css/darkly.css",
-  "simple-mode" : false
+  "simple-mode" : false,
+  "css" : {
+    "li-class" : "c-li",
+    "ul-class" : "c-ul",
+    "li-span-class" : "li-sc",
+    "bool" : "c-bool",
+    "int" : "c-int",
+    "float" : "c-float",
+    "string" : "c-string",
+    "array" : "c-array",
+    "object" : "c-object",
+    "resource" : "c-resource",
+    "null" : "c-null",
+    "callable" : "c-callable",
+    "unknown" : "c-unknown"
+  }
 }

@@ -1,3 +1,28 @@
 ul {
     list-style-type: none;
+    padding-bottom: 10px;
+}
+li{
+    display:inline;
+    padding-right: 10px;
+}
+body{
+    background-color: #232524;
+    padding: 0;
+    margin: 10px 0;
+}
+
+.c-null, .c-bool {
+    color: #BF7041;
+}
+
+.c-string {
+    color: #5B7546;
+}
+.c-array {
+    color: #ffffff;
+}
+
+.c-int, .c-float {
+    color:#7E90A6;
 }

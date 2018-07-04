@@ -3,6 +3,7 @@
 namespace Phpd\Renderer;
 
 use Phpd\Config\Config;
+use Phpd\Config\ConfigLoaderException;
 
 /**
  * Class Html
@@ -24,25 +25,39 @@ final class Html implements RendererInterface
     /**
      * @param Config $config
      */
-    public function setConfig(Config $config) : void
+    public function setConfig(Config $config): void
     {
         $this->config = $config;
+    }
+
+    /**
+     * @return Config
+     * @throws ConfigLoaderException
+     */
+    public function getConfig() {
+        if(null === $this->config) {
+            throw new ConfigLoaderException("Config is not yet loaded");
+        }
+        return $this->config;
     }
 
     /**
      * @return Html
      * @throws \Phpd\Config\ConfigLoaderException
      */
-    public function start() : self
+    public function start(): self
     {
         if (null === $this->config) {
-            $config = (new Config())->load();
-        }else {
-            $config = $this->config->load();
+            $this->config = (new Config())->load();
+        } else {
+            $this->config->load();
         }
 
-        if ( ! $config->simpleMode() && !$config->isStyleLoaded()) {
-            $this->html .= '<style>' . $config->loadStyles() . '</style>';
+        if ( ! $this->config->simpleMode()) {
+            if ( ! $this->config->styleLoaded()) {
+                $this->html .= '<style>'.$this->config->loadStyles().'</style>';
+
+            }
         }
 
         $this->html .= '<pre>';
@@ -50,44 +65,84 @@ final class Html implements RendererInterface
         return $this;
     }
 
-    public function wrapToLi($string) : self {
-        $this->html .= '<li>' . $string . '</li>';
+    /**
+     * @param null|string $string
+     * @param             $class
+     *
+     * @return Html
+     */
+    public function append($string, $class = null): self
+    {
+        $this->html .= sprintf('<span class="%s %s">%s</span>',
+            $this->config->get('li-span-class'),
+            null !== $class ? $class : '',
+            $string
+        );
+
         return $this;
     }
 
-    public function append($string) : self {
-        $this->html .= $string;
+    /**
+     * @param null $class
+     *
+     * @return Html
+     */
+    public function startUl($class = null): self
+    {
+        $this->html .= sprintf('<ul class="%s %s">',
+            $this->config->get('ul-class'),
+            null !== $class ? $class : ''
+        );
+
         return $this;
     }
 
-    public function startUl() : self {
-        $this->html .= '<ul>';
-        return $this;
-    }
-
-    public function endUl() : self {
+    /**
+     * @return Html
+     */
+    public function endUl(): self
+    {
         $this->html .= '</ul>';
+
         return $this;
     }
 
-    public function startLi() : self {
-        $this->html .= '<li>';
+    /**
+     * @param null $class
+     *
+     * @return Html
+     */
+    public function startLi($class = null): self
+    {
+        $this->html .= sprintf('<li class="%s %s">',
+            $this->config->get('li-class'),
+            null !== $class ? $class : ''
+        );
+
         return $this;
     }
 
-    public function endLi() : self {
+    /**
+     * @return Html
+     */
+    public function endLi(): self
+    {
         $this->html .= '</li>';
+
         return $this;
     }
 
     /**
      * @return string
      */
-    public function end() : string
+    public function end(): string
     {
         $this->html .= '</pre>';
+        $this->html .= '<hr>';
+        $return = $this->html;
+        $this->html = '';
 
-        return $this->html;
+        return $return;
     }
 
 }

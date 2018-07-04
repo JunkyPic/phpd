@@ -15,6 +15,7 @@ class Config
     private $requiredConfigKeys = [
         'theme',
         'simple-mode',
+        'css',
     ];
 
     /**
@@ -37,7 +38,10 @@ class Config
      */
     private $config;
 
-    public function isStyleLoaded() {
+    /**
+     * @return bool
+     */
+    public function styleLoaded() {
         return $this->styleLoaded;
     }
 
@@ -60,6 +64,13 @@ class Config
     }
 
     /**
+     * @return mixed
+     */
+    public function all() {
+        return $this->config;
+    }
+
+    /**
      * @param $key
      *
      * @return null
@@ -70,8 +81,29 @@ class Config
             return $this->config[$key];
         }
 
+        // Try a recursive search
+        return $this->recursiveSearch($key, $this->config);
+    }
+
+    /**
+     * @param       $search
+     * @param array $array
+     *
+     * @return mixed
+     */
+    private function recursiveSearch($search, array $array) {
+        foreach($array as $key => $value) {
+            if(is_array($value)) {
+                return $this->recursiveSearch($search, $value);
+            }
+            if($search === $key) {
+                return $value;
+            }
+        }
+
         return null;
     }
+    
 
     /**
      * @return string

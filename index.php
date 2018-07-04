@@ -26,7 +26,14 @@ $test = [
     'another entry',
 ];
 
-dump(false, 2.2, 'test');
+try {
+//    dump(new \Phpd\Config\Config());
+    dump($test);
+//    dump([]);
+} catch (Exception $exception) {
+
+}
+
 
 //
 //

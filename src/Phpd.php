@@ -2,6 +2,7 @@
 
 namespace Phpd;
 
+use Phpd\Config\Config;
 use Phpd\Renderer\Cli;
 use Phpd\Renderer\Html;
 
@@ -20,7 +21,9 @@ class Phpd
         if(php_sapi_name() === 'cli') {
             $builder = new Builder(new Cli());
         } else {
-            $builder = new Builder(new Html());
+            $html = new Html();
+            $html->setConfig(new Config());
+            $builder = new Builder($html);
         }
 
         foreach($args[0] as $arg) {

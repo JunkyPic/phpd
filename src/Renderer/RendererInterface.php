@@ -2,4 +2,6 @@
 
 namespace Phpd\Renderer;
 
-interface RendererInterface{}
+interface RendererInterface{
+    public function start();
+}
