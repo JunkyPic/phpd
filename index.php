@@ -27,9 +27,9 @@ $test = [
 ];
 
 try {
-//    dump(new \Phpd\Config\Config());
+    dump(new \Phpd\Config\Config());
     dump($test);
-//    dump([]);
+    dump([]);
 } catch (Exception $exception) {
 
 }

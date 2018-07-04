@@ -229,9 +229,11 @@ class Builder
             return self::TYPE_ARRAY;
         }
 
+        if(is_integer($variable)) {
+            return self::TYPE_INTEGER;
+        }
+
         switch ($variable) {
-            case is_integer($variable):
-                return self::TYPE_INTEGER;
             case is_float($variable):
                 return self::TYPE_FLOAT;
             case is_string($variable):
