@@ -1,5 +1,7 @@
 <?php
-
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 require 'vendor/autoload.php';
 
 $test = [
@@ -26,36 +28,12 @@ $test = [
     'another entry',
 ];
 
+
 try {
     dump(new \Phpd\Config\Config());
     dump($test);
-    dump([]);
+    dump('test');
 } catch (Exception $exception) {
-
+    echo ($exception->__toString());
 }
 
-
-//
-//
-//function test($array)
-//{
-//    foreach ($array as $key => $item) {
-//        echo '<pre><ul>';
-//        echo '<li>';
-//        echo $key;
-//        echo '<ul>';
-//        echo '<li>';
-//        if (is_array($item)) {
-//            echo "array(".count($item).')';
-//            test($item);
-//        }else {
-//            echo $item;
-//        }
-//        echo '</li>';
-//        echo '</ul>';
-//        echo '</li>';
-//        echo '</ul></pre>';
-//    }
-//}
-//
-//test($test);

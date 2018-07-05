@@ -12,11 +12,11 @@ class Config
     /**
      * @var array
      */
-    private $requiredConfigKeys = [
-        'theme',
-        'simple-mode',
-        'css',
-    ];
+    private $requiredConfigKeys
+        = [
+            'theme',
+            'simple-mode',
+        ];
 
     /**
      * @var string
@@ -41,7 +41,8 @@ class Config
     /**
      * @return bool
      */
-    public function styleLoaded() {
+    public function styleLoaded(): bool
+    {
         return $this->styleLoaded;
     }
 
@@ -50,7 +51,7 @@ class Config
      *
      * @throws ConfigLoaderException
      */
-    public function setPath($path = null)
+    public function setPath($path = null): void
     {
         if (null !== $path) {
             if ( ! file_exists($path)) {
@@ -66,16 +67,17 @@ class Config
     /**
      * @return mixed
      */
-    public function all() {
+    public function all(): ?array
+    {
         return $this->config;
     }
 
     /**
      * @param $key
      *
-     * @return null
+     * @return null|string
      */
-    public function get($key)
+    public function get($key): ?string
     {
         if (array_key_exists($key, $this->config)) {
             return $this->config[$key];
@@ -91,24 +93,25 @@ class Config
      *
      * @return mixed
      */
-    private function recursiveSearch($search, array $array) {
-        foreach($array as $key => $value) {
-            if(is_array($value)) {
+    private function recursiveSearch($search, array $array): ?string
+    {
+        foreach ($array as $key => $value) {
+            if (is_array($value)) {
                 return $this->recursiveSearch($search, $value);
             }
-            if($search === $key) {
+            if ($search === $key) {
                 return $value;
             }
         }
 
         return null;
     }
-    
+
 
     /**
      * @return string
      */
-    public function getPath()
+    public function getPath(): string
     {
         return $this->path;
     }
@@ -117,7 +120,7 @@ class Config
      * @return $this
      * @throws ConfigLoaderException
      */
-    public function load()
+    public function load(): self
     {
         if ( ! file_exists($this->path)) {
             throw new ConfigLoaderException(
@@ -140,7 +143,7 @@ class Config
 
         $this->config = $config;
 
-        $this->simpleMode = (bool) $config['simple-mode'];
+        $this->simpleMode = (bool)$config['simple-mode'];
 
         return $this;
     }
@@ -148,9 +151,11 @@ class Config
     /**
      * @return bool|string
      */
-    public function loadStyles() {
-        if($this->styleLoaded === false) {
+    public function loadStyles()
+    {
+        if ($this->styleLoaded === false) {
             $this->styleLoaded = true;
+
             return file_get_contents($this->get('theme'));
         }
     }
@@ -158,7 +163,7 @@ class Config
     /**
      * Used to set simple mode to true on the fly
      */
-    public function disableCss()
+    public function disableCss(): bool
     {
         $this->simpleMode = true;
     }
@@ -166,7 +171,7 @@ class Config
     /**
      * Used to set simple mode to false on the fly
      */
-    public function enableCss()
+    public function enableCss(): bool
     {
         $this->simpleMode = false;
     }
@@ -174,7 +179,8 @@ class Config
     /**
      * @return bool
      */
-    public function simpleMode() {
+    public function simpleMode(): bool
+    {
         return $this->simpleMode;
     }
 

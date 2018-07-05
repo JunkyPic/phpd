@@ -13,6 +13,27 @@ use Phpd\Config\ConfigLoaderException;
 final class Html implements RendererInterface
 {
     /**
+     * @var array 
+     */
+    private $classes
+        = [
+            'li-class'      => 'c-li',
+            'ul-class'      => 'c-ul',
+            'li-span-class' => 'li-sc',
+            'bool'          => 'c-bool',
+            'int'           => 'c-int',
+            'float'         => 'c-float',
+            'string'        => 'c-string',
+            'array'         => 'c-array',
+            'object'        => 'c-object',
+            'resource'      => 'c-resource',
+            'null'          => 'c-null',
+            'callable'      => 'c-callable',
+            'unknown'       => 'c-unknown',
+        ];
+
+
+    /**
      * @var string
      */
     private $html = '';
@@ -31,13 +52,24 @@ final class Html implements RendererInterface
     }
 
     /**
-     * @return Config
+     * @param $class
+     *
+     * @return mixed|string
+     */
+    public function getClass(string $class) :string {
+        return isset($this->classes[$class]) ? $this->classes[$class] : '';
+    }
+
+    /**
+     * @return null|Html
      * @throws ConfigLoaderException
      */
-    public function getConfig() {
-        if(null === $this->config) {
+    public function getConfig() : ?self
+    {
+        if (null === $this->config) {
             throw new ConfigLoaderException("Config is not yet loaded");
         }
+
         return $this->config;
     }
 
@@ -71,10 +103,10 @@ final class Html implements RendererInterface
      *
      * @return Html
      */
-    public function append($string, $class = null): self
+    public function append(string $string, ?string $class = null): self
     {
         $this->html .= sprintf('<span class="%s %s">%s</span>',
-            $this->config->get('li-span-class'),
+            $this->getClass('li-span-class'),
             null !== $class ? $class : '',
             $string
         );
@@ -83,14 +115,14 @@ final class Html implements RendererInterface
     }
 
     /**
-     * @param null $class
+     * @param string|null $class
      *
      * @return Html
      */
-    public function startUl($class = null): self
+    public function startUl(?string $class = null): self
     {
         $this->html .= sprintf('<ul class="%s %s">',
-            $this->config->get('ul-class'),
+            $this->getClass('ul-class'),
             null !== $class ? $class : ''
         );
 
@@ -108,14 +140,14 @@ final class Html implements RendererInterface
     }
 
     /**
-     * @param null $class
+     * @param null|string $class
      *
      * @return Html
      */
-    public function startLi($class = null): self
+    public function startLi(?string $class = null): self
     {
         $this->html .= sprintf('<li class="%s %s">',
-            $this->config->get('li-class'),
+            $this->getClass('li-class'),
             null !== $class ? $class : ''
         );
 
@@ -138,7 +170,6 @@ final class Html implements RendererInterface
     public function end(): string
     {
         $this->html .= '</pre>';
-        $this->html .= '<hr>';
         $return = $this->html;
         $this->html = '';
 
