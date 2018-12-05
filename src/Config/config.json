@@ -1,4 +1,3 @@
 {
-  "theme": "src/css/darkly.css",
-  "simple-mode" : false
+  "theme": "/src/css/darkly.css"
 }

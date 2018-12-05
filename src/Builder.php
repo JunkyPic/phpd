@@ -86,15 +86,15 @@ class Builder
     {
         $this
             ->renderer
-            ->start()
-            ->startUl()
-            ->startLi()
+            ->startDl()
+            ->startDt()
             ->append(self::TYPE_ARRAY.' ('.count($input).') =>',
-                $this->renderer->getClass($this->getType($input)));
+                $this->renderer->getClass($this->getType($input)))
+            ->endDt()
+            ->startDd();
 
         return $this->wrapArrayRecursive($input)
-            ->endUl()
-            ->endLi()
+            ->endDd()
             ->end();
     }
 
@@ -114,9 +114,9 @@ class Builder
 
         $this->renderer->start()->startUl()
             ->startLi()
-            ->append('('.self::TYPE_OBJECT.') '.$reflection->getName(), 'c-null')
+            ->append('('.self::TYPE_OBJECT.') '.$reflection->getName(),
+                'c-null')
             ->endLi()
-
             ->startUl()
             ->startLi()
             ->append('Internal - ', 'c-bool')->endLi()
@@ -125,7 +125,6 @@ class Builder
             ->append($reflection->isInternal() ? 'true' : 'false', 'c-bool')
             ->endLi()
             ->endUl()
-
             ->startUl()
             ->startLi()
             ->append('Instantiable - ', 'c-bool')->endLi()
@@ -134,7 +133,6 @@ class Builder
             ->append($reflection->isInstantiable() ? 'true' : 'false', 'c-bool')
             ->endLi()
             ->endUl()
-
             ->startUl()
             ->startLi()
             ->append('Clonable - ', 'c-bool')->endLi()
@@ -143,7 +141,6 @@ class Builder
             ->append($reflection->isCloneable() ? 'true' : 'false', 'c-bool')
             ->endLi()
             ->endUl()
-
             ->startUl()
             ->startLi()
             ->append('Properties', 'c-null')
@@ -155,7 +152,7 @@ class Builder
             ->endLi()
             ->startLi();
 
-        foreach($reflectionClassMethods as $key => $method) {
+        foreach ($reflectionClassMethods as $key => $method) {
 
         }
 
@@ -179,66 +176,62 @@ class Builder
             if (is_array($value)) {
                 $this
                     ->renderer
-                    ->startUl()
-                    ->startLi()
-                    ->append($key .' ('. self::TYPE_ARRAY. ' ' . count($value).') => ',
+                    ->startDl()
+                    ->startDt()
+                    ->append($key.' ('.self::TYPE_ARRAY.' '.count($value)
+                        .') => ',
                         $this->renderer->getClass($this->getType($value)))
-                    ->endLi();
+                    ->endDt();
 
                 $this->wrapArrayRecursive($value);
 
                 $this
                     ->renderer
-                    ->endUl()
-                    ->endLi();
+                    ->startDl();
             } else {
                 $type = sprintf('%s => ', $key);
                 $typeValueClass = $this->getType($value);
-                if($typeValueClass === self::TYPE_STRING) {
-                    $typeValue = sprintf('(%s %s) %s', $typeValueClass, strlen($value), $value);
+
+                if ($typeValueClass === self::TYPE_STRING) {
+                    $typeValue = sprintf('(%s %s) %s', $typeValueClass,
+                        strlen($value), $value);
                 } else {
-                    $typeValue = sprintf('(%s) %s', $typeValueClass, $value);
-                }
-
-                $this
-                    ->renderer
-                    ->startUl()
-                    ->startLi();
-
-                if (null === $value) {
-                    $this->renderer
-                        ->append($type,
-                            $this->renderer->getClass($typeValueClass))
-                        ->endLi()
-                        ->startLi()
-                        ->append('(null) null',
-                            $this->renderer->getClass($typeValueClass));
-                } elseif (is_bool($value)) {
-                    $this->renderer
-                        ->append($type,
-                            $this->renderer->getClass(($typeValueClass)))
-                        ->endLi()
-                        ->startLi()
-                        ->append(false === $value ? '(bool) false' : '(bool) true',
-                            $this->renderer->getClass($typeValueClass));
-
-                } else {
-                    $this->renderer
-                        ->append($type,
-                            $this->renderer->getClass($typeValueClass))
-                        ->endLi()
-                        ->startLi()
-                        ->append($typeValue,
-                            $this->renderer->getClass($typeValueClass));
+                    if (null === $value) {
+                        $typeValue = sprintf('%s', $append = '(null) null');
+                    } elseif (is_bool($value)) {
+                        $typeValue = sprintf('%s', false === $value ? '(bool) false' : '(bool) true');
+                    } else {
+                        $typeValue = sprintf('(%s) %s', $typeValueClass, $value);
+                    }
                 }
 
                 $this->renderer
-                    ->endLi()
-                    ->endUl();
+                    ->startDl()
+                    ->startDt()
+                    ->append($type,
+                        $this->renderer->getClass($typeValueClass))
+                    ->endDt()
+                    ->startDd()
+                    ->append($typeValue,
+                        $this->renderer->getClass($typeValueClass))
+                    ->endDd()
+                    ->endDl();
             }
         }
 
         return $this->renderer;
+    }
+
+    protected function wrapGeneric($input, $type)
+    {
+        return $this
+            ->renderer
+            ->startDl()
+            ->startDt()
+            ->append('('.$type.') ', $this->renderer->getClass($type))
+            ->append($input, $this->renderer->getClass($type))
+            ->endDt()
+            ->endDl();
     }
 
     /**
@@ -248,14 +241,10 @@ class Builder
      */
     protected function getType($variable): string
     {
-        // I have no idea why but
-        // case is_bool($variable)
-        // doesn't work with switch
         if (is_bool($variable)) {
             return self::TYPE_BOOLEAN;
         }
 
-        // Same thing here, no idea why...yet
         if (is_null($variable)) {
             return self::TYPE_NULL;
         }
@@ -284,25 +273,4 @@ class Builder
                 return self::TYPE_UNKNOWN;
         }
     }
-
-    /**
-     * @param $input
-     * @param $type
-     *
-     * @return Html
-     */
-    protected function wrapGeneric($input, $type)
-    {
-        return $this
-            ->renderer
-            ->startUl()
-            ->startLi()
-            ->append('('.$type.') ', $this->renderer->getClass($type))
-            ->endLi()
-            ->startLi()
-            ->append($input, $this->renderer->getClass($type))
-            ->endLi()
-            ->endUl();
-    }
-
 }

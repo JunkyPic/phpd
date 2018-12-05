@@ -1,9 +1,9 @@
+<head><style><?php echo file_get_contents($_SERVER['DOCUMENT_ROOT'] . '/src/css/darkly.css') // TODO REMOVE THIS FROM HERE AND LOAD DYNAMYCALLY?></style></head>
 <?php
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 require 'vendor/autoload.php';
-
 $test = [
     'string'             => 'Lorem',
     'integer'            => 1,
@@ -28,4 +28,12 @@ $test = [
     'another entry',
 ];
 
+echo '<pre>';
+try {
+//    du(new \Phpd\Config\Config());
+    du([1, 2, 3, true, null, function(){}]);
+    du('test');
+} catch (Exception $exception) {
+    echo ($exception->__toString());
+}
 

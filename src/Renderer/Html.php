@@ -13,25 +13,25 @@ use Phpd\Config\ConfigLoaderException;
 final class Html implements RendererInterface
 {
     /**
-     * @var array 
+     * @var array
      */
     private $classes
         = [
-            'li-class'      => 'c-li',
-            'ul-class'      => 'c-ul',
-            'li-span-class' => 'li-sc',
-            'bool'          => 'c-bool',
-            'int'           => 'c-int',
-            'float'         => 'c-float',
-            'string'        => 'c-string',
-            'array'         => 'c-array',
-            'object'        => 'c-object',
-            'resource'      => 'c-resource',
-            'null'          => 'c-null',
-            'callable'      => 'c-callable',
-            'unknown'       => 'c-unknown',
+            'dl-class'   => 'dlc',
+            'dt-class'   => 'dtc',
+            'dd-class'   => 'ddc',
+            'span-class' => 'span-class',
+            'bool'       => 'd-bool',
+            'int'        => 'd-int',
+            'float'      => 'd-float',
+            'string'     => 'd-string',
+            'array'      => 'd-array',
+            'object'     => 'd-object',
+            'resource'   => 'd-resource',
+            'null'       => 'd-null',
+            'callable'   => 'd-callable',
+            'unknown'    => 'd-unknown',
         ];
-
 
     /**
      * @var string
@@ -45,10 +45,14 @@ final class Html implements RendererInterface
 
     /**
      * @param Config $config
+     *
+     * @return Html
      */
-    public function setConfig(Config $config): void
+    public function setConfig(Config $config): self
     {
         $this->config = $config;
+
+        return $this;
     }
 
     /**
@@ -56,15 +60,16 @@ final class Html implements RendererInterface
      *
      * @return mixed|string
      */
-    public function getClass(string $class) :string {
+    public function getClass(string $class): string
+    {
         return isset($this->classes[$class]) ? $this->classes[$class] : '';
     }
 
     /**
-     * @return null|Html
+     * @return null|Config
      * @throws ConfigLoaderException
      */
-    public function getConfig() : ?self
+    public function getConfig(): ?Config
     {
         if (null === $this->config) {
             throw new ConfigLoaderException("Config is not yet loaded");
@@ -85,14 +90,7 @@ final class Html implements RendererInterface
             $this->config->load();
         }
 
-        if ( ! $this->config->simpleMode()) {
-            if ( ! $this->config->styleLoaded()) {
-                $this->html .= '<style>'.$this->config->loadStyles().'</style>';
-
-            }
-        }
-
-        $this->html .= '<pre>';
+        $this->html .= '<div class="phpd">';
 
         return $this;
     }
@@ -106,7 +104,7 @@ final class Html implements RendererInterface
     public function append(string $string, ?string $class = null): self
     {
         $this->html .= sprintf('<span class="%s %s">%s</span>',
-            $this->getClass('li-span-class'),
+            $this->getClass('span-class'),
             null !== $class ? $class : '',
             $string
         );
@@ -119,10 +117,10 @@ final class Html implements RendererInterface
      *
      * @return Html
      */
-    public function startUl(?string $class = null): self
+    public function startDl(?string $class = null): self
     {
-        $this->html .= sprintf('<ul class="%s %s">',
-            $this->getClass('ul-class'),
+        $this->html .= sprintf('<dl class="%s %s">',
+            $this->getClass('dl-class'),
             null !== $class ? $class : ''
         );
 
@@ -132,9 +130,9 @@ final class Html implements RendererInterface
     /**
      * @return Html
      */
-    public function endUl(): self
+    public function endDl(): self
     {
-        $this->html .= '</ul>';
+        $this->html .= '</dl>';
 
         return $this;
     }
@@ -144,10 +142,25 @@ final class Html implements RendererInterface
      *
      * @return Html
      */
-    public function startLi(?string $class = null): self
+    public function startDt(?string $class = null): self
     {
-        $this->html .= sprintf('<li class="%s %s">',
-            $this->getClass('li-class'),
+        $this->html .= sprintf('<dt class="%s %s">',
+            $this->getClass('dt-class'),
+            null !== $class ? $class : ''
+        );
+
+        return $this;
+    }
+
+    /**
+     * @param null|string $class
+     *
+     * @return Html
+     */
+    public function startDd(?string $class = null): self
+    {
+        $this->html .= sprintf('<dd class="%s %s">',
+            $this->getClass('dd-class'),
             null !== $class ? $class : ''
         );
 
@@ -157,9 +170,19 @@ final class Html implements RendererInterface
     /**
      * @return Html
      */
-    public function endLi(): self
+    public function endDd(): self
     {
-        $this->html .= '</li>';
+        $this->html .= '</dd>';
+
+        return $this;
+    }
+
+    /**
+     * @return Html
+     */
+    public function endDt(): self
+    {
+        $this->html .= '</dt>';
 
         return $this;
     }
@@ -169,7 +192,7 @@ final class Html implements RendererInterface
      */
     public function end(): string
     {
-        $this->html .= '</pre>';
+        $this->html .= '</div>';
         $return = $this->html;
         $this->html = '';
 

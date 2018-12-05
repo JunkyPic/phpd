@@ -15,7 +15,6 @@ class Config
     private $requiredConfigKeys
         = [
             'theme',
-            'simple-mode',
         ];
 
     /**
@@ -24,27 +23,9 @@ class Config
     private $path = 'src/Config/config.json';
 
     /**
-     * @var bool
-     */
-    private $simpleMode = true;
-
-    /**
-     * @var bool
-     */
-    private $styleLoaded = false;
-
-    /**
      * @var
      */
     private $config;
-
-    /**
-     * @return bool
-     */
-    public function styleLoaded(): bool
-    {
-        return $this->styleLoaded;
-    }
 
     /**
      * @param null $path
@@ -53,15 +34,13 @@ class Config
      */
     public function setPath($path = null): void
     {
-        if (null !== $path) {
-            if ( ! file_exists($path)) {
-                throw new ConfigLoaderException(
-                    "Unable to find config file at path {$path}. Default location should be /src/Config/config.json."
-                );
-            }
-
-            $this->path = $path;
+        if (null === $path && ! file_exists($path)) {
+            throw new ConfigLoaderException(
+                "Unable to find config file at path {$path}. Default location should be /src/Config/config.json."
+            );
         }
+
+        $this->path = $path;
     }
 
     /**
@@ -107,7 +86,6 @@ class Config
         return null;
     }
 
-
     /**
      * @return string
      */
@@ -143,45 +121,7 @@ class Config
 
         $this->config = $config;
 
-        $this->simpleMode = (bool)$config['simple-mode'];
-
         return $this;
-    }
-
-    /**
-     * @return bool|string
-     */
-    public function loadStyles()
-    {
-        if ($this->styleLoaded === false) {
-            $this->styleLoaded = true;
-
-            return file_get_contents($this->get('theme'));
-        }
-    }
-
-    /**
-     * Used to set simple mode to true on the fly
-     */
-    public function disableCss(): bool
-    {
-        $this->simpleMode = true;
-    }
-
-    /**
-     * Used to set simple mode to false on the fly
-     */
-    public function enableCss(): bool
-    {
-        $this->simpleMode = false;
-    }
-
-    /**
-     * @return bool
-     */
-    public function simpleMode(): bool
-    {
-        return $this->simpleMode;
     }
 
 }

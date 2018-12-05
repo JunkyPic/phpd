@@ -4,7 +4,6 @@ namespace Phpd;
 
 use Phpd\Config\Config;
 use Phpd\Config\ConfigLoaderException;
-use Phpd\Renderer\Cli;
 use Phpd\Renderer\Html;
 
 /**
@@ -29,19 +28,15 @@ class Phpd
     /**
      * @param $args
      *
-     * @return Html|string
+     * @return string
      * @throws ConfigLoaderException
-     * @throws \ReflectionException
      */
     private static function startDump($args): string
     {
-        if (php_sapi_name() === 'cli') {
-            $builder = new Builder(new Cli());
-        } else {
-            $html = new Html();
-            $html->setConfig(new Config());
-            $builder = new Builder($html);
-        }
+        $html = new Html();
+        $html = $html->setConfig((new Config())->load());
+        $html->getConfig()->load();
+        $builder = new Builder($html);
 
         foreach ($args[0] as $arg) {
             return $builder->build($arg);

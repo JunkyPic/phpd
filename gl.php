@@ -5,6 +5,6 @@
  *
  * @throws Exception
  */
-function dump(...$args): void {
+function du(...$args): void {
     \Phpd\Phpd::dump($args);
 }

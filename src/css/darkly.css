@@ -1,27 +1,21 @@
-ul {
-    list-style-type: none;
-    padding-bottom: 10px;
-}
-li{
-    display:inline;
-}
 body{
     background-color: #232524;
     padding: 0;
     margin: 10px 0;
 }
 
-.c-null, .c-bool {
+.d-null, .d-bool {
     color: #BF7041;
 }
 
-.c-string {
+.d-string {
     color: #5B7546;
 }
-.c-array {
+.d-array {
     color: #ffffff;
 }
 
-.c-int, .c-float {
+.d-int, .d-float {
     color:#7E90A6;
 }
+
